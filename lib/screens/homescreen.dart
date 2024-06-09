@@ -14,14 +14,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  StationDetails demoStation = StationDetails(
-    stationID: 'AZP',
-    name: 'Azadpur',
-    isInterchange: true,
-    lines: ['yellow', 'pink'],
-    stations1: ['ADN','MDT'],
-    stations2: ['MJP','SHB']
-  );
+
+  late StationDetails demoStation;
+  @override
+  void initState() {
+    returnStation();
+    super.initState();
+  }
+  void returnStation() async {
+
+    setState(()  {
+
+      demoStation = StationDetails(
+        stationID: "AZU",
+        name: 'Azadpur',
+        isInterchange: true,
+        lines: ['yellow', 'pink'],
+        stations1: ['ADN', 'MDT'],
+        stations2: ['MJP', 'SHB'],
+      );
+
+    });
+    getCurrentStation();
+  }
 
   final List<String> savedStations = ['AZADPUR', 'KASHMERE GATE', 'ROHINI EAST', 'KASHMERE GATE'];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

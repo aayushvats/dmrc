@@ -1,3 +1,5 @@
+import 'package:dmrc/models/databaseHelper.dart';
+import 'package:dmrc/models/stationDetails.dart';
 import 'package:flutter/material.dart';
 
 // Define the enum
@@ -91,4 +93,32 @@ Color getLineColor(String colorString) {
     // If the string doesn't match any enum value, return a default color
     return Colors.black;
   }
+}
+
+Future<StationDetails> getCurrentStation() async {
+  print('Hello, World!');
+    String stationName = "AZU";
+    DatabaseHelper dbHelper = DatabaseHelper();
+    String? stationID = await dbHelper.getStationID(stationName);
+    print("meowmeow in here--");
+    print(stationID);
+    if (stationID != null) {
+      return StationDetails(
+        stationID: stationID,
+        name: 'Azadpur',
+        isInterchange:true,
+        lines: ['yellow', 'pink'],
+        stations1: ['ADN', 'MDT'],
+        stations2: ['MJP', 'SHB'],
+      );
+    }
+
+  return StationDetails(
+    stationID: "staionID",
+    name: 'meowmeow',
+    isInterchange: true,
+    lines: ['yellow', 'pink'],
+    stations1: ['ADN', 'MDT'],
+    stations2: ['MJP', 'SHB'],
+  );
 }

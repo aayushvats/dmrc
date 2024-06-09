@@ -108,7 +108,7 @@ class _MetroMapState extends State<MetroMap> {
               )
             : SizedBox.shrink(),
 
-        //currStationName
+        //currStationNamef
         Padding(
           padding: EdgeInsets.only(
             // left: (MediaQuery.of(context).size.width - 32)*0.5,
