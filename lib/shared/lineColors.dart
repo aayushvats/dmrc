@@ -98,10 +98,14 @@ Color getLineColor(String colorString) {
 Future<StationDetails> getCurrentStation() async {
   print('Hello, World!');
     String stationName = "AZU";
-    DatabaseHelper dbHelper = DatabaseHelper();
-    String? stationID = await dbHelper.getStationID(stationName);
+  double latitude = 28.6663534; // Replace with the target latitude
+  double longitude = 77.228467;
+  DatabaseHelper dbHelper = DatabaseHelper();
+    String? stationID = await dbHelper.getStationInfo(stationName);
     print("meowmeow in here--");
     print(stationID);
+  dbHelper.getLineDetails("LN1");
+  dbHelper.getNearestStation(latitude, longitude);
     if (stationID != null) {
       return StationDetails(
         stationID: stationID,
