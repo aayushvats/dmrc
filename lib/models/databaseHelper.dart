@@ -1,3 +1,4 @@
+import 'package:dmrc/models/stationDetails.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -26,12 +27,11 @@ class DatabaseHelper {
 // Check if the database exists
     var exists = await databaseExists(path);
 
-
     if (!exists) {
       // If the database doesn't exist, copy it from the assets
       ByteData data = await rootBundle.load('assets/db/dmrc_data.db');
       List<int> bytes =
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       // Write the bytes to the file
       await File(path).writeAsBytes(bytes);
@@ -40,10 +40,9 @@ class DatabaseHelper {
     return await openDatabase(path);
   }
 
-  Future<String?> getStationInfo(String stationCode) async {
-    final db = await database; // Assuming 'database' is your database instance
-
-    // Define the SQL query
+  Future<StationDetails> getStationInfo(String stationCode) async {
+    StationDetails station;
+    final db = await database;
     final String sqlQuery = '''
   WITH Params AS (
       SELECT ? AS stationCode -- Placeholder for station code
@@ -111,39 +110,45 @@ class DatabaseHelper {
   FROM
       StationInfo si;
   ''';
-
-    // Execute the query
-    final List<Map<String, dynamic>> result = await db.rawQuery(
-        sqlQuery, [stationCode]);
-
+    final List<Map<String, dynamic>> result =
+        await db.rawQuery(sqlQuery, [stationCode]);
+    print(result);
     if (result.isNotEmpty) {
-      // Print the result
-      print("---------Station Information------");
-      print(result.first);
-
-      return "";
+      station = StationDetails(
+        stationID: stationCode,
+        name: result[0]['name'],
+        isInterchange: result[0]['isInterchange']=='true'?true:false,
+        lines: result[0]['lines'].split(","),
+        stations1: result[0]['stations1']==null?null:result[0]['stations1'].split(","),
+        stations2: result[0]['stations2']==null?null:result[0]['stations2'].split(","),
+        stations3: result[0]['stations3']==null?null:result[0]['stations3'].split(",")
+      );
+      return station;
     } else {
-      return null;
+      return StationDetails(
+        stationID: "AZU",
+        name: 'SAMPLE STATION',
+        isInterchange: true,
+        lines: ['yellow', 'pink'],
+        stations1: ['ADN', 'MDT'],
+        stations2: ['MJP', 'SHB'],
+      );
+      ;
     }
   }
-  // Function to fetch and print line details
-  Future<void> getLineDetails(String lineCode) async {
-    final db = await database; // Assuming 'database' is your database instance
 
-    // Define the SQL query
+  Future<dynamic> getLineDetails(String lineCode) async {
+    final db = await database;
     final String sqlQuery = "SELECT * FROM MetroLines WHERE code = ?";
-
-    // Execute the query
-    final List<Map<String, dynamic>> result = await db.rawQuery(sqlQuery, [lineCode]);
-
-    // Print the line details
-    print("---------Line Details------");
-    print(result);
+    final List<Map<String, dynamic>> result =
+        await db.rawQuery(sqlQuery, [lineCode]);
+    return result;
   }
-  Future<void> getNearestStation(double latitude, double longitude) async {
-    final db = await database; // Assuming 'database' is your database instance
 
-    // Define the SQL query
+  Future<StationDetails> getNearestStation(
+      double latitude, double longitude) async {
+    StationDetails station;
+    final db = await database;
     final String sqlQuery = '''
   WITH params AS (
       SELECT ? AS target_lat, ? AS target_lon
@@ -154,14 +159,9 @@ class DatabaseHelper {
   ORDER BY distance
   LIMIT 1;
   ''';
-
-    // Execute the query
-    final List<Map<String, dynamic>> result = await db.rawQuery(
-        sqlQuery, [latitude, longitude]);
-
-    // Print the nearest station details
-    print("---------Nearest Station------");
-    print(result);
-
+    final List<Map<String, dynamic>> result =
+        await db.rawQuery(sqlQuery, [latitude, longitude]);
+    station = await getStationInfo(result[0]['stationID']);
+    return station;
   }
 }

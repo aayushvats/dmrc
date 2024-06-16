@@ -4,77 +4,83 @@ import 'package:flutter/material.dart';
 
 // Define the enum
 enum ColorName {
-  red,
-  redtint,
-  yellow,
-  yellowtint,
-  blue,
-  bluetint,
-  green,
-  greentint,
-  orange,
-  orangetint,
-  pink,
-  pinktint,
-  violet,
-  violettint,
-  magenta,
-  magentatint,
-  grey,
-  greytint,
-  aqua,
-  aquatint,
-  rapid,
-  rapidtint,
+  LN1,
+  LN1tint,
+  LN2,
+  LN2tint,
+  LN3,
+  LN3tint,
+  LN4,
+  LN4tint,
+  LN5,
+  LN5tint,
+  LN6,
+  LN6tint,
+  LN7,
+  LN7tint,
+  LN8,
+  LN8tint,
+  LN9,
+  LN9tint,
+  LN10,
+  LN10tint,
+  LN11,
+  LN11tint,
+  LN12, //unknown line
+  LN12tint, //unknown line
 }
 
 // Extension to get Color from the enum
 extension ColorExtension on ColorName {
   Color get color {
     switch (this) {
-      case ColorName.red:
+      case ColorName.LN1:
         return Color(0xFFDA483B);
-      case ColorName.redtint:
+      case ColorName.LN1tint:
         return Color(0xFF562D2E);
-      case ColorName.yellow:
+      case ColorName.LN2:
         return Color(0xFFFFC718);
-      case ColorName.yellowtint:
+      case ColorName.LN2tint:
         return Color(0xFF615423);
-      case ColorName.blue:
+      case ColorName.LN3:
         return Color(0xFF4486F4);
-      case ColorName.bluetint:
+      case ColorName.LN3tint:
         return Color(0xFF294065);
-      case ColorName.green:
+      case ColorName.LN4:
+        return Color(0xFF4486F4);
+      case ColorName.LN4tint:
+        return Color(0xFF294065);
+      case ColorName.LN5:
         return Color(0xFF1CA45C);
-      case ColorName.greentint:
+      case ColorName.LN5tint:
         return Color(0xFF1D4938);
-      case ColorName.orange:
-        return Color(0xFFFF9E0F);
-      case ColorName.orangetint:
-        return Color(0xFF614721);
-      case ColorName.pink:
-        return Color(0xFFDA3BA4);
-      case ColorName.pinktint:
-        return Color(0xFF562A4D);
-      case ColorName.violet:
+      case ColorName.LN6:
         return Color(0xFFA705AB);
-      case ColorName.violettint:
+      case ColorName.LN6tint:
         return Color(0xFF47194F);
-      case ColorName.magenta:
+      case ColorName.LN7:
+        return Color(0xFFDA3BA4);
+      case ColorName.LN7tint:
+        return Color(0xFF562A4D);
+      case ColorName.LN8:
         return Color(0xFFC1235C);
-      case ColorName.magentatint:
+      case ColorName.LN8tint:
         return Color(0xFF4E2238);
-      case ColorName.grey:
+      case ColorName.LN9:
         return Color(0xFF686868);
-      case ColorName.greytint:
+      case ColorName.LN9tint:
         return Color(0xFF33373B);
-      case ColorName.rapid:
+      case ColorName.LN10:
+        return Color(0xFFFF9E0F);
+      case ColorName.LN10tint:
+        return Color(0xFF614721);
+      case ColorName.LN11:
         return Color(0xFF44BFF4);
-      case ColorName.rapidtint:
+      case ColorName.LN11tint:
         return Color(0xFF295165);
-      case ColorName.aqua:
+      case ColorName.LN12:
         return Color(0xFF2EFFF2);
-      case ColorName.aquatint:
+      case ColorName.LN12tint:
         return Color(0xFF226465);
       default:
         return Colors.black; // Fallback color
@@ -82,7 +88,6 @@ extension ColorExtension on ColorName {
   }
 }
 
-// Function to get Color from a String
 Color getLineColor(String colorString) {
   try {
     final colorName = ColorName.values.firstWhere(
@@ -95,34 +100,34 @@ Color getLineColor(String colorString) {
   }
 }
 
-Future<StationDetails> getCurrentStation() async {
-  print('Hello, World!');
-    String stationName = "AZU";
-  double latitude = 28.6663534; // Replace with the target latitude
-  double longitude = 77.228467;
-  DatabaseHelper dbHelper = DatabaseHelper();
-    String? stationID = await dbHelper.getStationInfo(stationName);
-    print("meowmeow in here--");
-    print(stationID);
-  dbHelper.getLineDetails("LN1");
-  dbHelper.getNearestStation(latitude, longitude);
-    if (stationID != null) {
-      return StationDetails(
-        stationID: stationID,
-        name: 'Azadpur',
-        isInterchange:true,
-        lines: ['yellow', 'pink'],
-        stations1: ['ADN', 'MDT'],
-        stations2: ['MJP', 'SHB'],
-      );
-    }
-
-  return StationDetails(
-    stationID: "staionID",
-    name: 'meowmeow',
-    isInterchange: true,
-    lines: ['yellow', 'pink'],
-    stations1: ['ADN', 'MDT'],
-    stations2: ['MJP', 'SHB'],
-  );
-}
+// Future<StationDetails> getCurrentStation() async {
+//   print('Hello, World!');
+//     String stationName = "AZU";
+//   double latitude = 28.6663534; // Replace with the target latitude
+//   double longitude = 77.228467;
+//   DatabaseHelper dbHelper = DatabaseHelper();
+//     String? stationID = await dbHelper.getStationInfo(stationName);
+//     print("meowmeow in here--");
+//     print(stationID);
+//   dbHelper.getLineDetails("LN1");
+//   dbHelper.getNearestStation(latitude, longitude);
+//     if (stationID != null) {
+//       return StationDetails(
+//         stationID: stationID,
+//         name: 'Azadpur',
+//         isInterchange:true,
+//         lines: ['LN2', 'LN6'],
+//         stations1: ['ADN', 'MDT'],
+//         stations2: ['MJP', 'SHB'],
+//       );
+//     }
+//
+//   return StationDetails(
+//     stationID: "staionID",
+//     name: 'meowmeow',
+//     isInterchange: true,
+//     lines: ['LN2', 'LN6'],
+//     stations1: ['ADN', 'MDT'],
+//     stations2: ['MJP', 'SHB'],
+//   );
+// }

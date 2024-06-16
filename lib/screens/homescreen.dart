@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dmrc/models/stationDetails.dart';
 import 'package:dmrc/shared/lineColors.dart';
 import 'package:dmrc/widgets/currentStation.dart';
@@ -5,6 +7,10 @@ import 'package:dmrc/widgets/map/map.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../models/databaseHelper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,16 +21,52 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  bool isLoading = true;
   late StationDetails demoStation;
+  late StreamSubscription<Position> _positionStream;
+  DatabaseHelper dbHelper = DatabaseHelper();
+  bool? deniedPermission;
+
   @override
   void initState() {
-    returnStation();
     super.initState();
+    returnStation();
+    _checkPermissions();
   }
+
+  void _checkPermissions() async {
+    if (await Permission.location.request().isGranted) {
+      _getLocation();
+    } else {
+      setState(() {
+        deniedPermission = true;
+      });
+    }
+  }
+
+  void _getLocation() {
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+    );
+
+    _positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position position) async {
+              setState(() {
+                isLoading = true;
+              });
+          // StationDetails nearestStation = await dbHelper.getNearestStation(position.latitude, position.longitude);
+          StationDetails nearestStation = await dbHelper.getNearestStation(28.681783, 77.153459);
+          setState(() {
+            print('here');
+            isLoading = false;
+            demoStation = nearestStation;
+          });
+        });
+  }
+
   void returnStation() async {
-
     setState(()  {
-
       demoStation = StationDetails(
         stationID: "AZU",
         name: 'Azadpur',
@@ -33,17 +75,23 @@ class _HomePageState extends State<HomePage> {
         stations1: ['ADN', 'MDT'],
         stations2: ['MJP', 'SHB'],
       );
-
     });
-    getCurrentStation();
   }
 
-  final List<String> savedStations = ['AZADPUR', 'KASHMERE GATE', 'ROHINI EAST', 'KASHMERE GATE'];
+  final List<String> savedStations = ['AZADPUR', 'KASHMERE GATE', 'ROHINI EAST', 'KASHMERE GATE', '   '];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isLoading
+        ?Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          color: Colors.white30,
+        ),
+      ),
+    )
+        :Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -92,7 +140,6 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Column(
                 children: [
-                  MetroMap(currentStation: demoStation,),
                   Text(
                     demoStation.name,
                     style: TextStyle(
@@ -102,22 +149,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () {
-                // Handle the home tap here
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                // Handle the settings tap here
-                Navigator.pop(context);
-              },
             ),
           ],
         ),
@@ -231,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                                   angle: 30 * (3.1415926535 / 180),
                                   child: Icon(
                                     Icons.my_location,
-                                    color: getLineColor('green'),
+                                    color: getLineColor('LN5'),
                                     size: 32,
                                   ),
                                 ),
@@ -292,7 +323,7 @@ class _HomePageState extends State<HomePage> {
                                   angle: 310 * (3.1415926535 / 180),
                                   child: Icon(
                                     CupertinoIcons.arrow_turn_down_right,
-                                    color: getLineColor('green'),
+                                    color: getLineColor('LN5'),
                                     size: 32,
                                   ),
                                 ),
@@ -311,17 +342,17 @@ class _HomePageState extends State<HomePage> {
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
-                              children: savedStations.map(
-                                      (station) => Container(
-                                    margin: EdgeInsets.only(top: 8, bottom: 8, right: 8),
-                                    padding: EdgeInsets.only(top: 5, bottom: 5),
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: Colors.white30)
-                                    ),
-                                    child: Text("  $station  ", style: TextStyle(fontSize: 12, color: Colors.white30),),
-                                  )).toList()
+                                children: savedStations.map(
+                                        (station) => Container(
+                                      margin: EdgeInsets.only(top: 8, bottom: 8, right: 8),
+                                      padding: EdgeInsets.only(top: 5, bottom: 5),
+                                      decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: Colors.white30)
+                                      ),
+                                      child: Text("  $station  ", style: TextStyle(fontSize: 12, color: Colors.white30),),
+                                    )).toList()
                             ),
                           ),
                           IgnorePointer(
@@ -383,25 +414,25 @@ class _HomePageState extends State<HomePage> {
 
                       //BUTTON
                       ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Theme.of(context).canvasColor),
-                        ),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Theme.of(context).canvasColor),
+                          ),
                           onPressed: (){},
                           child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.manage_search_outlined,
-                            color: getLineColor('green'),
-                          ),
-                          Text(
-                            " SEARCH STATION",
-                            style: TextStyle(
-                              color: getLineColor('green'),
-                            ),
-                          ),
-                        ],
-                      ))
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.manage_search_outlined,
+                                color: getLineColor('LN5'),
+                              ),
+                              Text(
+                                " SEARCH STATION",
+                                style: TextStyle(
+                                  color: getLineColor('LN5'),
+                                ),
+                              ),
+                            ],
+                          ))
                     ],
                   ),
                 ),

@@ -60,16 +60,18 @@ class _CurrentStationState extends State<CurrentStation> {
               ],
             ),
           ),
-          if (widget.currentStation.isInterchange)
-            Row(
-              children: widget.currentStation.lines.map((line) => Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.circle_rounded,
-                  size: 30,
-                  color: getLineColor(line),
-                ),
-              )).toList(),
+          Row(
+              children:[
+                for(String line in widget.currentStation.lines)
+                  Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Icon(
+                      Icons.circle_rounded,
+                      size: 30,
+                      color: getLineColor(line),
+                    ),
+                  ),
+              ]
             ),
           SizedBox(
             width: 18,
